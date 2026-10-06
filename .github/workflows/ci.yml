@@ -16,4 +16,6 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
       - run: opam install . --deps-only --with-test --with-doc
+      - run: opam install ocamlformat.0.29.0
+      - run: opam exec -- ocamlformat --check lib/*.ml test/*.ml
       - run: opam exec -- dune build -p betacalendars @runtest @doc
