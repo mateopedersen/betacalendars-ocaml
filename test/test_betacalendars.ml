@@ -5,7 +5,14 @@ let date y m d = Result.get_ok (Civil_date.make ~year:y ~month:m ~day:d)
 let dates () =
   Alcotest.(check bool) "1900" false (Civil_date.is_leap_year 1900);
   Alcotest.(check bool) "2000" true (Civil_date.is_leap_year 2000);
+  Alcotest.(check bool) "2024" true (Civil_date.is_leap_year 2024);
+  Alcotest.(check bool) "2027" false (Civil_date.is_leap_year 2027);
+  Alcotest.(check bool) "2028" true (Civil_date.is_leap_year 2028);
+  Alcotest.(check bool) "2100" false (Civil_date.is_leap_year 2100);
   Alcotest.(check bool) "2400" true (Civil_date.is_leap_year 2400);
+  Alcotest.(check int)
+    "2024 leap day ordinal" 60
+    (Civil_date.day_of_year (date 2024 2 29));
   Alcotest.(check bool)
     "0001-01-01 Monday" true
     (Civil_date.weekday (date 1 1 1) = Weekday.Monday);
@@ -37,7 +44,20 @@ let dates () =
         (List.length
            (List.filter
               (fun c -> c.Month_grid.in_requested_month)
-              (Month_grid.cells g)))
+              (Month_grid.cells g)));
+      let rendered =
+        Month_grid.cells g
+        |> List.filter_map (fun c ->
+            if c.Month_grid.in_requested_month then
+              Option.map Civil_date.to_string c.Month_grid.date
+            else None)
+      in
+      let expected =
+        Result.get_ok (Fixture.month ~year:y ~month:m)
+        |> List.map Civil_date.to_string
+      in
+      Alcotest.(check (list string))
+        "each month date appears exactly once" expected rendered
     done
   done
 
