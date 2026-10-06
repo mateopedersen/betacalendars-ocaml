@@ -1,0 +1,30 @@
+name: API documentation
+on:
+  push:
+    branches: [main]
+    tags: ["v*", "*"]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.5"
+      - run: opam install . --deps-only --with-doc
+      - run: opam exec -- dune build @doc
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _build/default/_doc/_html
+      - id: deployment
+        uses: actions/deploy-pages@v4
