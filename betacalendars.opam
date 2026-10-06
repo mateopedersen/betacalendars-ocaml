@@ -1,0 +1,22 @@
+opam-version: "2.0"
+synopsis: "Deterministic calendar grids, recurrence and date-boundary utilities"
+description: "Beta Calendars provides civil-date arithmetic, configurable month and year grids, bounded recurrence rules, date ranges, temporal boundary analysis, and deterministic fixtures."
+maintainer: "betacalendars@gmail.com"
+authors: "Mateo Pedersen"
+license: "MIT"
+homepage: "https://www.betacalendars.com/"
+doc: "https://mateopedersen.github.io/betacalendars-ocaml/"
+bug-reports: "https://github.com/mateopedersen/betacalendars-ocaml/issues"
+dev-repo: "git+https://github.com/mateopedersen/betacalendars-ocaml.git"
+tags: ["calendar" "date" "datetime" "recurrence" "testing" "grid"]
+x-maintenance-intent: ["(latest)"]
+depends: [
+  "ocaml" {>= "4.14"}
+  "dune" {>= "3.11"}
+  "alcotest" {with-test}
+  "odoc" {with-doc}
+]
+build: [
+  ["dune" "subst"] {dev}
+  ["dune" "build" "-p" name "-j" jobs "@install" "@runtest" {with-test} "@doc" {with-doc}]
+]
